@@ -5,15 +5,46 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.json.*;
-import java.util.Iterator;;
+import java.util.Iterator;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class JsonProcessor {
 
 	 public static int totalNumber = 0;
 	// http://localhost:8080/RESTfulExample/json/product/get
 	public static void main(String[] args) {
+		Properties prop = new Properties();
+		InputStream input = null;
+
+		try {
+
+			//input = new FileInputStream("/resources/urlpath.properties");
+			input = ClassLoader.getSystemResourceAsStream("urlpath.properties");
+
+			// load a properties file
+			prop.load(input);
+
+			getKeys(prop.getProperty("url"));
+
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 
 	}
+
+
 
 	//# -1 getting the JSON data from a given URL
 
@@ -35,6 +66,7 @@ public class JsonProcessor {
 
 			br = new BufferedReader(new InputStreamReader(
 					(conn.getInputStream())));
+			//System.out.println(br.readLine());
 
 		} catch (MalformedURLException e) {
 
@@ -68,7 +100,9 @@ public class JsonProcessor {
 					Iterator<String> iterator = object.keys();
 					while (iterator.hasNext()) {
 						String currentKey = iterator.next();
+
 						System.out.println(currentKey);
+
 					}
 				}
 			}
@@ -95,8 +129,11 @@ public class JsonProcessor {
 					Iterator<String> iterator = object.keys();
 					while (iterator.hasNext()) {
 						String currentKey = iterator.next();
-						sum = sum + Integer.parseInt(currentKey);
-						totalNumber++;
+						if(currentKey.equalsIgnoreCase("numbers")) {
+							sum = sum + Integer.parseInt(currentKey);
+							totalNumber++;
+						}
+
 					}
 				}
 			}
